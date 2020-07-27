@@ -2,8 +2,9 @@ import sqlite3
 import Chargen
 import os
 
+
 def sql_create_db():
-    list_create = sqlite3.connect("chargen_info.db")
+    list_create = sqlite3.connect("starting_character_info.db")
 
     list_create.execute("""CREATE TABLE IF NOT EXISTS CLASS
     (
@@ -26,26 +27,35 @@ def sql_create_db():
 
 
 def randomizer_dir():
+    '''Find directory where program is installed'''
     starting_dir = os.getcwd()
     return starting_dir
 
 
 def cataclysm_dir():
+    '''Find location of CDDA'''
     cataclysm_dir = input("What is the location of your Cataclysm game file?\n") + (r"\data\json")
     if cataclysm_dir == "\data\json":
         cataclysm_dir = r"T:\Roguelikes\CDDA Game Launcher\Saves\data\json"
     return cataclysm_dir
 
-def chargen_info():
+def starting_character_info():
+    '''
+    Fins out what the player is using for starting builds - defaults to "6" and "single"
+
+    :return: (Chargen Points(default = 6), Chargen Pool Type (default = "single")
+    '''
     pools = "x"
     chargen_points = None
     while not chargen_points:
        chargen_points = input("How many points are you using to build your character?  Default = 6\n") or 6
+       print("{}\n".format(chargen_points))
 
     while pools != "single" or "multiple" or "other":
         pools = input("Which type of pool are you using?  Single, multiple or other?  Default = single\n")
         if pools == "":
             pools = "single"
+            print("single\n")
             break
         else:
             pools = pools.lower()
@@ -54,20 +64,21 @@ def chargen_info():
     chargen_points = int(chargen_points)
 
     return chargen_points,pools
+
+
 def core():
 
 
     app_dir = randomizer_dir()
     game_dir = cataclysm_dir()
 
-    chargen_points, pool = chargen_info()
+    starting_points, pool = starting_character_info()
 
     # Select starting scenario (bias towards default)
 
-    job_title, job_cost = Chargen.class_chargen(game_dir)
-    print("\nYour class is {} which costs {} points".format(job_title.replace("_"," ").title(),job_cost))
+    job_title, job_cost = Chargen.class_selection(game_dir)
 
-    #Divide remaining points among traits, stats and skills
+    Chargen.character_points_left(starting_points, job_cost)
 
     #Select traits (max +12 and -12)
     #   Choose how many negative traits player will have (random 0-12)
