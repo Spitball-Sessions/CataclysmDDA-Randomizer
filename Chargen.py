@@ -87,7 +87,7 @@ def character_points_left(total_points,currently_used):
 
     '''This section sets up a weighted list to choose numbers - the curve is highest in the middle and then drops and peaks again.
     The 3 variables allow the weighting to be modular, though the for statement needs a bit more work to be truly robust'''
-    
+
     points_length = len(usable_points)
     middle = (points_length//2)
     weights_values = [None] * len(usable_points)
