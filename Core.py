@@ -27,58 +27,60 @@ def sql_create_db():
 
 
 def randomizer_dir():
-    '''Find directory where program is installed'''
+    '''when this program is finished - file should be placed in Cataclysm game dir'''
     starting_dir = os.getcwd()
     return starting_dir
 
 
-def cataclysm_dir():
+def cataclysm_dir(): #once program complete, add game_dir as input
     '''Find location of CDDA'''
     cataclysm_dir = input("What is the location of your Cataclysm game file?\n") + (r"\data\json")
     if cataclysm_dir == "\data\json":
         cataclysm_dir = r"T:\Roguelikes\CDDA Game Launcher\Saves\data\json"
+
+    #cataclysm_dir = game_dir + (r"\data\json)
+
     return cataclysm_dir
 
-def starting_character_info():
+def starting_character_info(game_dir):
     '''
     Fins out what the player is using for starting builds - defaults to "6" and "single"
 
     :return: (Chargen Points(default = 6), Chargen Pool Type (default = "single")
     '''
     pools = "x"
-    chargen_points = None
-    while not chargen_points:
-       chargen_points = input("How many points are you using to build your character?  Default = 6\n") or 6
-       print("{}\n".format(chargen_points))
+    starting_points = None
+    disadvantages = 12
+
+    while not starting_points:
+       starting_points = input("How many points are you using to build your character?  Default = 6\n") or 6
 
     while pools != "single" or "multiple" or "other":
         pools = input("Which type of pool are you using?  Single, multiple or other?  Default = single\n")
         if pools == "":
             pools = "single"
-            print("single\n")
             break
         else:
             pools = pools.lower()
             break
 
-    chargen_points = int(chargen_points)
+    disadvantages = input("How many disadvantage points do you allow?  Default is 12.") or 12
 
-    return chargen_points,pools
+    starting_points = int(starting_points)
 
+
+    job_points_cost = Chargen.job_choice(game_dir)
+    Chargen.allocating_points(starting_points, job_points_cost, disadvantages)
 
 def core():
-
 
     app_dir = randomizer_dir()
     game_dir = cataclysm_dir()
 
-    starting_points, pool = starting_character_info()
+    starting_character_info(game_dir)
 
-    # Select starting scenario (bias towards default)
 
-    job_title, job_cost = Chargen.class_selection(game_dir)
 
-    Chargen.character_points_left(starting_points, job_cost)
 
     #Select traits (max +12 and -12)
     #   Choose how many negative traits player will have (random 0-12)
